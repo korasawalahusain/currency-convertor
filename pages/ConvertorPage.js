@@ -98,17 +98,14 @@ export default function ConvertorScreen({ navigation }) {
       );
 
       if (cacheValue === undefined) {
-        console.log("fetching...");
         fetch(
           `https://api.exchangerate.host/latest?base=${fromCurrency}&symbols=${toCurrency}`
         )
           .then((response) => {
-            console.log("converting...");
             return response.json();
           })
           .then((response) => {
             setCRFetching(false);
-            console.log("setting state...");
             setConverstionRate(response.rates[toCurrency]);
             setConversionRateState((prevState) => [
               ...prevState,
