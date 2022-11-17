@@ -1,12 +1,12 @@
+import "react-native-gesture-handler";
 import { useEffect } from "react";
 import { RecoilRoot } from "recoil";
-import { PAGES, TABES } from "./constants";
 import { StatusBar } from "expo-status-bar";
 import useLoadAssets from "./helpers/LoadAssets";
-import TabNavigationBar from "./navigation/TabNavigator";
+import { createStackNavigator } from "@react-navigation/stack";
+import { NavigationContainer } from "@react-navigation/native";
+import { ChartPage, HistoryPage, ConvertorPage } from "./pages";
 import { preventAutoHideAsync, hideAsync } from "expo-splash-screen";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { setVisibilityAsync, useVisibility } from "expo-navigation-bar";
 
 preventAutoHideAsync();
 
@@ -16,7 +16,6 @@ const fonts = {
 };
 
 export default function App() {
-  const visibility = useVisibility();
   const [assetsLoaded] = useLoadAssets([], fonts);
 
   useEffect(() => {
@@ -29,24 +28,40 @@ export default function App() {
     hideSplashScreen();
   }, [assetsLoaded]);
 
-  useEffect(() => {
-    const setNavBarVisibility = async () => {
-      await setVisibilityAsync("hidden");
-    };
-
-    setNavBarVisibility();
-  }, [visibility]);
-
   if (!assetsLoaded) {
     return null;
   }
+  const RootStack = createStackNavigator();
 
   return (
     <RecoilRoot>
-      <GestureHandlerRootView className="flex-1">
-        <StatusBar style="light" />
-        <TabNavigationBar tabs={TABES} pages={PAGES} />
-      </GestureHandlerRootView>
+      <StatusBar style="auto" />
+      <NavigationContainer>
+        <RootStack.Navigator
+          screenOptions={{ headerShown: false }}
+          initialRouteName="History"
+        >
+          <RootStack.Screen name="History" component={HistoryPage} />
+          <RootStack.Screen
+            name="Convertor"
+            component={ConvertorPage}
+            options={{
+              presentation: "modal",
+              gestureEnabled: true,
+              gestureDirection: "vertical",
+            }}
+          />
+          <RootStack.Screen
+            name="Chart"
+            component={ChartPage}
+            options={{
+              presentation: "modal",
+              gestureEnabled: true,
+              gestureDirection: "vertical",
+            }}
+          />
+        </RootStack.Navigator>
+      </NavigationContainer>
     </RecoilRoot>
   );
 }
