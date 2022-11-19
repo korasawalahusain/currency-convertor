@@ -1,14 +1,7 @@
 import React from "react";
-import Animated, {
-  withTiming,
-  interpolate,
-  Extrapolate,
-  useSharedValue,
-  useAnimatedStyle,
-} from "react-native-reanimated";
-import Svg, { Path } from "react-native-svg";
-import { View, Text, Dimensions } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { RectButton } from "react-native-gesture-handler";
+import Swipeable from "react-native-gesture-handler/Swipeable";
+import { Animated, View, Text, Dimensions, Image } from "react-native";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const ITEM_HEIGHT = 72.8;
@@ -89,9 +82,13 @@ function HistoryItem({ item }) {
           <View className="flex flex-row w-full p-3 justify-between">
             <View className="flex flex-row items-center space-x-3">
               <View className="flex flex-row items-center">
+                <Image
+                  source={{ uri: item.to.flag }}
+                  className="h-10 w-10 rounded-md"
+                />
                 <View className="flex flex-col justify-evenly ml-2">
                   <Text className="font-futura_bold text-lg text-quinary">
-                    {item.to}
+                    {item.to.currency.code}
                   </Text>
                 </View>
               </View>
@@ -108,19 +105,23 @@ function HistoryItem({ item }) {
                 />
               </Svg>
               <View className="flex flex-row items-center">
+                <Image
+                  source={{ uri: item.from.flag }}
+                  className="h-10 w-10 rounded-md"
+                />
                 <View className="flex flex-col justify-evenly ml-2">
                   <Text className="font-futura_bold text-lg text-quinary">
-                    {item.from}
+                    {item.from.currency.code}
                   </Text>
                 </View>
               </View>
             </View>
             <View className="flex flex-col items-end">
               <Text className="font-futura_bold text-quinary text-lg">
-                {item.fromValue}
+                {item.from.currency.symbol} {item.fromValue}
               </Text>
               <Text className="font-futura text-quinary text-xs">
-                {item.toValue}
+                {item.to.currency.symbol} {item.toValue}
               </Text>
             </View>
           </View>
@@ -129,5 +130,3 @@ function HistoryItem({ item }) {
     </GestureDetector>
   );
 }
-
-export default React.memo(HistoryItem);

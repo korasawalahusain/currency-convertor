@@ -1,5 +1,4 @@
-import InkWell from "react-native-inkwell";
-import { COUNTRY_CODES } from "../constants";
+import { countries } from "../constants";
 import { Svg, Path } from "react-native-svg";
 import { CurrencyInput } from "../components";
 import { historyState } from "../atoms/history";
@@ -15,10 +14,24 @@ export default function ConvertorScreen({ navigation }) {
     useRecoilState(conversionRates);
   const setHistoryState = useSetRecoilState(historyState);
 
-  const [toCurrency, setToCurrency] = useState(COUNTRY_CODES[1]);
-  const [fromCurrency, setFromCurrency] = useState(COUNTRY_CODES[0]);
+  const [toCurrency, setToCurrency] = useState(countries[1]);
+  const [fromCurrency, setFromCurrency] = useState(countries[0]);
   const [conversionRate, setConverstionRate] = useState();
   const [crFetching, setCRFetching] = useState(false);
+
+  const onClickDropDown = (openedFor) => {
+    const setData = (data) => {
+      if (openedFor === "from") {
+        setFromCurrency(data);
+      } else {
+        setToCurrency(data);
+      }
+    };
+
+    navigation.navigate("CurrencyList", {
+      setData,
+    });
+  };
 
   const [focusOn, setFocusOn] = useState("from");
 
@@ -93,27 +106,27 @@ export default function ConvertorScreen({ navigation }) {
 
       const cacheValue = conversionRateState.find(
         (conversionRate) =>
-          conversionRate.from === fromCurrency &&
-          conversionRate.to === toCurrency
+          conversionRate.from === fromCurrency.currency.code &&
+          conversionRate.to === toCurrency.currency.code
       );
 
       if (cacheValue === undefined) {
         fetch(
-          `https://api.exchangerate.host/latest?base=${fromCurrency}&symbols=${toCurrency}`
+          `https://api.exchangerate.host/latest?base=${fromCurrency.currency.code}&symbols=${toCurrency.currency.code}`
         )
           .then((response) => {
             return response.json();
           })
           .then((response) => {
             setCRFetching(false);
-            setConverstionRate(response.rates[toCurrency]);
+            setConverstionRate(response.rates[toCurrency.currency.code]);
             setConversionRateState((prevState) => [
               ...prevState,
               {
                 id: "",
-                from: fromCurrency,
-                to: toCurrency,
-                rate: response.rates[toCurrency],
+                from: fromCurrency.currency.code,
+                to: toCurrency.currency.code,
+                rate: response.rates[toCurrency.currency.code],
               },
             ]);
           })
@@ -175,8 +188,8 @@ export default function ConvertorScreen({ navigation }) {
             type="from"
             value={from}
             focusOn={focusOn}
-            setCurrency={(index) => setFromCurrency(COUNTRY_CODES[index])}
-            currency={fromCurrency}
+            country={fromCurrency}
+            openCurrenyPicker={() => onClickDropDown("from")}
             onFocus={() => setFocusOn("from")}
             conversionRate={
               crFetching ? "refreshing..." : Number(conversionRate).toFixed(3)
@@ -186,9 +199,9 @@ export default function ConvertorScreen({ navigation }) {
             type="to"
             value={to}
             focusOn={focusOn}
-            currency={toCurrency}
-            setCurrency={(index) => setToCurrency(COUNTRY_CODES[index])}
+            country={toCurrency}
             onFocus={() => setFocusOn("to")}
+            openCurrenyPicker={() => onClickDropDown("to")}
             conversionRate={
               crFetching
                 ? "refreshing..."
@@ -197,9 +210,9 @@ export default function ConvertorScreen({ navigation }) {
           />
         </View>
 
-        <View className="flex flex-row">
+        <View className="flex flex-row space-x-2">
           <Pressable
-            className="w-5/6 py-5 rounded-2xl bg-black mt-3 items-center justify-center"
+            className="w-4/5 py-5 rounded-2xl bg-black mt-3 items-center justify-center"
             onPress={okayBtnPress}
           >
             <Text className="text-quinary font-futura">Okay</Text>
@@ -231,21 +244,12 @@ export default function ConvertorScreen({ navigation }) {
         </View>
 
         <View className="flex-1 mt-4 space-y-1">
-          <View className="flex w-full h-[23%] flex-row">
+          <View className="flex w-full h-[23%] flex-row space-x-1">
             {[1, 2, 3].map((number, index) => (
-              <InkWell
+              <Pressable
                 key={index}
-                style={{
-                  backgroundColor: "#709874",
-                  borderRadius: 60,
-                  height: "100%",
-                  width: "33.33333%",
-                }}
-                contentContainerStyle={{
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-                onTap={() => {
+                className="bg-quaternary2 rounded-[60px] h-full w-1/3 items-center justify-center"
+                onPress={() => {
                   focusOn === "from"
                     ? setFrom((prevState) => prevState.concat(`${number}`))
                     : focusOn === "to"
@@ -254,24 +258,15 @@ export default function ConvertorScreen({ navigation }) {
                 }}
               >
                 <Text className="font-futura text-[30px]">{number}</Text>
-              </InkWell>
+              </Pressable>
             ))}
           </View>
           <View className="flex w-full h-[23%] flex-row space-x-1">
             {[4, 5, 6].map((number, index) => (
-              <InkWell
+              <Pressable
                 key={index}
-                style={{
-                  backgroundColor: "#709874",
-                  borderRadius: 60,
-                  height: "100%",
-                  width: "33.33333%",
-                }}
-                contentContainerStyle={{
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-                onTap={() => {
+                className="bg-quaternary2 rounded-[60px] h-full w-1/3 items-center justify-center"
+                onPress={() => {
                   focusOn === "from"
                     ? setFrom((prevState) => prevState.concat(`${number}`))
                     : focusOn === "to"
@@ -280,24 +275,15 @@ export default function ConvertorScreen({ navigation }) {
                 }}
               >
                 <Text className="font-futura text-[30px]">{number}</Text>
-              </InkWell>
+              </Pressable>
             ))}
           </View>
           <View className="flex w-full h-[23%] flex-row space-x-1">
             {[7, 8, 9].map((number, index) => (
-              <InkWell
+              <Pressable
                 key={index}
-                style={{
-                  backgroundColor: "#709874",
-                  borderRadius: 60,
-                  height: "100%",
-                  width: "33.33333%",
-                }}
-                contentContainerStyle={{
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-                onTap={() => {
+                className="bg-quaternary2 rounded-[60px] h-full w-1/3 items-center justify-center"
+                onPress={() => {
                   focusOn === "from"
                     ? setFrom((prevState) => prevState.concat(`${number}`))
                     : focusOn === "to"
@@ -306,36 +292,16 @@ export default function ConvertorScreen({ navigation }) {
                 }}
               >
                 <Text className="font-futura text-[30px]">{number}</Text>
-              </InkWell>
+              </Pressable>
             ))}
           </View>
           <View className="flex w-full h-[23%] flex-row space-x-1">
-            <InkWell
-              style={{
-                backgroundColor: "#709874",
-                borderRadius: 60,
-                height: "100%",
-                width: "33.33333%",
-              }}
-              contentContainerStyle={{
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
+            <Pressable className="bg-quaternary2 rounded-[60px] h-full w-1/3 items-center justify-center">
               <Text className="font-futura text-[30px]">*</Text>
-            </InkWell>
-            <InkWell
-              style={{
-                backgroundColor: "#709874",
-                borderRadius: 60,
-                height: "100%",
-                width: "33.33333%",
-              }}
-              contentContainerStyle={{
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-              onTap={() => {
+            </Pressable>
+            <Pressable
+              className="bg-quaternary2 rounded-[60px] h-full w-1/3 items-center justify-center"
+              onPress={() => {
                 focusOn === "from"
                   ? setFrom((prevState) => prevState.concat("0"))
                   : focusOn === "to"
@@ -344,19 +310,10 @@ export default function ConvertorScreen({ navigation }) {
               }}
             >
               <Text className="font-futura text-[30px]">0</Text>
-            </InkWell>
-            <InkWell
-              style={{
-                backgroundColor: "#709874",
-                borderRadius: 60,
-                height: "100%",
-                width: "33.33333%",
-              }}
-              contentContainerStyle={{
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-              onTap={() => {
+            </Pressable>
+            <Pressable
+              className="bg-quaternary2 rounded-[60px] h-full w-1/3 items-center justify-center"
+              onPress={() => {
                 focusOn === "from"
                   ? setFrom((prevState) => prevState.slice(0, -1))
                   : focusOn === "to"
@@ -383,7 +340,7 @@ export default function ConvertorScreen({ navigation }) {
                   clip-rule="evenodd"
                 />
               </Svg>
-            </InkWell>
+            </Pressable>
           </View>
         </View>
       </View>

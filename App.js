@@ -1,11 +1,15 @@
-import "react-native-gesture-handler";
+import {
+  ChartPage,
+  HistoryPage,
+  ConvertorPage,
+  CurrencyListPage,
+} from "./pages";
 import { useEffect } from "react";
 import { RecoilRoot } from "recoil";
 import { StatusBar } from "expo-status-bar";
 import useLoadAssets from "./helpers/LoadAssets";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
-import { ChartPage, HistoryPage, ConvertorPage } from "./pages";
 import { preventAutoHideAsync, hideAsync } from "expo-splash-screen";
 
 preventAutoHideAsync();
@@ -58,6 +62,13 @@ export default function App() {
               presentation: "modal",
               gestureEnabled: true,
               gestureDirection: "vertical",
+            }}
+          />
+          <RootStack.Screen
+            name="CurrencyList"
+            component={CurrencyListPage}
+            options={{
+              presentation: "modal",
             }}
           />
         </RootStack.Navigator>
