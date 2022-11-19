@@ -1,6 +1,7 @@
 import React from "react";
 import { Svg, Path } from "react-native-svg";
-import { View, Text, TextInput, Image, TouchableOpacity } from "react-native";
+import { BaseButton } from "react-native-gesture-handler";
+import { View, Text, TextInput, Image } from "react-native";
 
 const CurrencyInput = ({
   type,
@@ -15,17 +16,17 @@ const CurrencyInput = ({
     <View
       className={`flex-1  border-[3px] ${
         focusOn === type ? "border-black" : "border-[transparent]"
-      } rounded-3xl p-5`}
+      } p-5 rounded-sm`}
     >
       <View className="flex flex-row w-full h-14">
-        <View className="w-14 h-full bg-black rounded-xl items-center justify-center">
+        <View className="w-14 h-full bg-black items-center justify-center rounded-sm">
           <Image
             source={{ uri: country?.flag }}
-            className="h-3/5 w-3/5 rounded-md"
+            className="h-3/5 w-3/5 rounded-sm"
           />
         </View>
         <View className="flex flex-col justify-around ml-3">
-          <TouchableOpacity
+          <BaseButton
             onPress={openCurrenyPicker}
             className="flex flex-row items-center justify-between"
           >
@@ -44,7 +45,7 @@ const CurrencyInput = ({
                 clip-rule="evenodd"
               />
             </Svg>
-          </TouchableOpacity>
+          </BaseButton>
           <Text className="font-futura text-xs">
             1{country?.currency.code ?? "xxx"} = {conversionRate ?? "xxx"}
           </Text>

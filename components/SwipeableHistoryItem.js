@@ -1,19 +1,15 @@
-import {
-  Text,
-  View,
-  Image,
-  Animated,
-  StyleSheet,
-  I18nManager,
-} from "react-native";
 import React from "react";
+import { useSetRecoilState } from "recoil";
 import Svg, { Path } from "react-native-svg";
-import { RectButton } from "react-native-gesture-handler";
+import { historyState } from "../atoms/history";
+import { BaseButton } from "react-native-gesture-handler";
 import Swipeable from "react-native-gesture-handler/Swipeable";
+import { Text, View, Image, Animated, I18nManager, Alert } from "react-native";
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 
 function SwipeableHistoryItem({ item }) {
+  const setHistoryState = useSetRecoilState(historyState);
   const renderLeftActions = (_progress, dragX) => {
     const scale = dragX.interpolate({
       inputRange: [0, 80],
@@ -21,7 +17,7 @@ function SwipeableHistoryItem({ item }) {
       extrapolate: "clamp",
     });
     return (
-      <RectButton
+      <BaseButton
         className={`flex-1 bg-quaternary2 justify-end items-center ${
           I18nManager.isRTL ? "flex-row" : "flex-row-reverse"
         }`}
@@ -46,7 +42,7 @@ function SwipeableHistoryItem({ item }) {
             />
           </Svg>
         </AnimatedView>
-      </RectButton>
+      </BaseButton>
     );
   };
 
@@ -57,7 +53,7 @@ function SwipeableHistoryItem({ item }) {
       extrapolate: "clamp",
     });
     return (
-      <RectButton
+      <BaseButton
         className={`flex-1 bg-quinary2 justify-end items-center ${
           I18nManager.isRTL ? "flex-row-reverse" : "flex-row"
         }`}
@@ -82,7 +78,7 @@ function SwipeableHistoryItem({ item }) {
             />
           </Svg>
         </AnimatedView>
-      </RectButton>
+      </BaseButton>
     );
   };
 
@@ -99,21 +95,41 @@ function SwipeableHistoryItem({ item }) {
   return (
     <Swipeable
       ref={updateRef}
-      friction={2}
       leftThreshold={100}
       enableTrackpadTwoFingerGesture
       rightThreshold={100}
       renderLeftActions={renderLeftActions}
       renderRightActions={renderRightActions}
-      shouldCancelWhenOutside
+      onSwipeableOpen={(direction, swipeable) => {
+        Alert.alert(
+          "Are you sure?",
+          "This history item will be deleted!",
+          [
+            {
+              text: "Cancel",
+              onPress: () => {
+                swipeableRow?.close();
+              },
+              style: "cancel",
+            },
+            {
+              text: "Yes",
+              style: "default",
+            },
+          ],
+          {
+            cancelable: true,
+          }
+        );
+      }}
     >
       <View className="w-full bg-black">
-        <View className="flex flex-row w-full p-3 justify-between">
+        <View className="flex flex-row w-full px-3 py-1 justify-between">
           <View className="flex flex-row items-center space-x-3">
             <View className="flex flex-row items-center">
               <Image
                 source={{ uri: item.to.flag }}
-                className="h-10 w-10 rounded-md"
+                className="h-10 w-10 rounded-sm"
               />
               <View className="flex flex-col justify-evenly ml-2">
                 <Text className="font-futura_bold text-lg text-quinary">
@@ -136,7 +152,7 @@ function SwipeableHistoryItem({ item }) {
             <View className="flex flex-row items-center">
               <Image
                 source={{ uri: item.from.flag }}
-                className="h-10 w-10 rounded-md"
+                className="h-10 w-10 rounded-sm"
               />
               <View className="flex flex-col justify-evenly ml-2">
                 <Text className="font-futura_bold text-lg text-quinary">
@@ -158,14 +174,5 @@ function SwipeableHistoryItem({ item }) {
     </Swipeable>
   );
 }
-
-const styles = StyleSheet.create({
-  actionIcon: {
-    width: 30,
-    marginHorizontal: 10,
-    backgroundColor: "plum",
-    height: 20,
-  },
-});
 
 export default React.memo(SwipeableHistoryItem);

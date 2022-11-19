@@ -30,7 +30,6 @@ export default function ChartPage({ route, navigation }) {
     );
 
     const responseJson = await response.json();
-    console.log(responseJson);
     setData(responseJson.rates);
   };
 
@@ -51,7 +50,7 @@ export default function ChartPage({ route, navigation }) {
       <View className="flex flex-row w-full pt-12 px-4 justify-between">
         <View className="flex flex-row items-center space-x-3">
           <View className="flex flex-row items-center">
-            <Image source={{ uri: to.flag }} className="h-10 w-10 rounded-md" />
+            <Image source={{ uri: to.flag }} className="h-10 w-10 rounded-sm" />
             <View className="flex flex-col justify-evenly ml-2">
               <Text className="font-futura_bold text-lg text-quinary">
                 {to.currency.code}
@@ -73,7 +72,7 @@ export default function ChartPage({ route, navigation }) {
           <View className="flex flex-row items-center">
             <Image
               source={{ uri: from.flag }}
-              className="h-10 w-10 rounded-md"
+              className="h-10 w-10 rounded-sm"
             />
             <View className="flex flex-col justify-evenly ml-2">
               <Text className="font-futura_bold text-lg text-quinary">
@@ -150,7 +149,7 @@ export default function ChartPage({ route, navigation }) {
               }}
               className={`${
                 selectedIndex === index ? "bg-[#FFF]" : "bg-grey "
-              } p-2 rounded-md`}
+              } p-2 rounded-sm`}
             >
               <Text
                 className={`${

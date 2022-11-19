@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 
 function CurrencyListItem({ country, onCurrenyPicked }) {
   return (
@@ -10,7 +10,7 @@ function CurrencyListItem({ country, onCurrenyPicked }) {
       <View className="flex flex-row w-full items-center">
         <Image
           source={{ uri: country.flag }}
-          className="h-10 w-10 rounded-md"
+          className="h-10 w-10 rounded-sm"
         />
         <View className="flex flex-col justify-evenly ml-3">
           <Text className="font-futura_bold text-md text-quinary">

@@ -39,7 +39,7 @@ export default function App() {
 
   return (
     <RecoilRoot>
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
       <NavigationContainer>
         <RootStack.Navigator
           screenOptions={{ headerShown: false }}

@@ -1,9 +1,10 @@
 import { countries } from "../constants";
+import { Text, View } from "react-native";
 import { Svg, Path } from "react-native-svg";
 import { CurrencyInput } from "../components";
 import { historyState } from "../atoms/history";
 import React, { useState, useEffect } from "react";
-import { Text, View, Pressable } from "react-native";
+import { BaseButton } from "react-native-gesture-handler";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { conversionRates } from "../atoms/conversionRates";
 
@@ -36,41 +37,60 @@ export default function ConvertorScreen({ navigation }) {
   const [focusOn, setFocusOn] = useState("from");
 
   const okayBtnPress = () => {
-    setHistoryState((prevState) => {
-      if (prevState) {
-        let state = prevState.find(
-          (prevState) =>
-            prevState.date === new Date().toISOString().split("T")[0]
-        );
-        if (state) {
-          state = {
-            ...state,
+    if (to !== "" && from !== "") {
+      setHistoryState((prevState) => {
+        if (prevState) {
+          let state = prevState.find(
+            (prevState) =>
+              prevState.date === new Date().toISOString().split("T")[0]
+          );
+          if (state) {
+            state = {
+              ...state,
 
-            data: [
-              ...state.data,
+              data: [
+                ...state.data,
+                {
+                  id: Math.floor(Math.random() * 1000) + 1,
+                  from: fromCurrency,
+                  to: toCurrency,
+                  fromValue: from,
+                  toValue: to,
+                },
+              ],
+            };
+
+            return [
+              ...prevState.filter(
+                (prevState) =>
+                  prevState.date !== new Date().toISOString().split("T")[0]
+              ),
+              state,
+            ];
+          } else {
+            return [
+              ...prevState,
               {
-                from: fromCurrency,
-                to: toCurrency,
-                fromValue: from,
-                toValue: to,
+                date: new Date().toISOString().split("T")[0],
+                data: [
+                  {
+                    id: Math.floor(Math.random() * 1000) + 1,
+                    from: fromCurrency,
+                    to: toCurrency,
+                    fromValue: from,
+                    toValue: to,
+                  },
+                ],
               },
-            ],
-          };
-
-          return [
-            ...prevState.filter(
-              (prevState) =>
-                prevState.date !== new Date().toISOString().split("T")[0]
-            ),
-            state,
-          ];
+            ];
+          }
         } else {
           return [
-            ...prevState,
             {
               date: new Date().toISOString().split("T")[0],
               data: [
                 {
+                  id: Math.floor(Math.random() * 1000) + 1,
                   from: fromCurrency,
                   to: toCurrency,
                   fromValue: from,
@@ -80,22 +100,8 @@ export default function ConvertorScreen({ navigation }) {
             },
           ];
         }
-      } else {
-        return [
-          {
-            date: new Date().toISOString().split("T")[0],
-            data: [
-              {
-                from: fromCurrency,
-                to: toCurrency,
-                fromValue: from,
-                toValue: to,
-              },
-            ],
-          },
-        ];
-      }
-    });
+      });
+    }
   };
 
   useEffect(() => {
@@ -163,7 +169,7 @@ export default function ConvertorScreen({ navigation }) {
       <View className="flex-1 px-5">
         <View className="flex flex-row justify-between items-center w-full pt-12">
           <Text className="text-black font-futura_bold text-3xl">Convert</Text>
-          <Pressable
+          <BaseButton
             onPress={() => {
               navigation.goBack();
             }}
@@ -180,7 +186,7 @@ export default function ConvertorScreen({ navigation }) {
                 clip-rule="evenodd"
               />
             </Svg>
-          </Pressable>
+          </BaseButton>
         </View>
 
         <View className="w-full h-[325px] flex-col pt-2.5">
@@ -211,14 +217,14 @@ export default function ConvertorScreen({ navigation }) {
         </View>
 
         <View className="flex flex-row space-x-2">
-          <Pressable
-            className="w-4/5 py-5 rounded-2xl bg-black mt-3 items-center justify-center"
+          <BaseButton
+            className="w-4/5 py-5 bg-black mt-3 items-center justify-center"
             onPress={okayBtnPress}
           >
             <Text className="text-quinary font-futura">Okay</Text>
-          </Pressable>
-          <Pressable
-            className="flex-1 py-5 rounded-2xl bg-black mt-3 items-center justify-center"
+          </BaseButton>
+          <BaseButton
+            className="flex-1 py-5 bg-black mt-3 items-center justify-center"
             onPress={() => {
               navigation.navigate("Chart", {
                 to: toCurrency,
@@ -240,15 +246,15 @@ export default function ConvertorScreen({ navigation }) {
                 d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"
               />
             </Svg>
-          </Pressable>
+          </BaseButton>
         </View>
 
         <View className="flex-1 mt-4 space-y-1">
           <View className="flex w-full h-[23%] flex-row space-x-1">
             {[1, 2, 3].map((number, index) => (
-              <Pressable
+              <BaseButton
                 key={index}
-                className="bg-quaternary2 rounded-[60px] h-full w-1/3 items-center justify-center"
+                className="bg-quaternary2 h-full w-[32.6%] items-center justify-center"
                 onPress={() => {
                   focusOn === "from"
                     ? setFrom((prevState) => prevState.concat(`${number}`))
@@ -258,14 +264,14 @@ export default function ConvertorScreen({ navigation }) {
                 }}
               >
                 <Text className="font-futura text-[30px]">{number}</Text>
-              </Pressable>
+              </BaseButton>
             ))}
           </View>
           <View className="flex w-full h-[23%] flex-row space-x-1">
             {[4, 5, 6].map((number, index) => (
-              <Pressable
+              <BaseButton
                 key={index}
-                className="bg-quaternary2 rounded-[60px] h-full w-1/3 items-center justify-center"
+                className="bg-quaternary2 h-full w-[32.6%] items-center justify-center"
                 onPress={() => {
                   focusOn === "from"
                     ? setFrom((prevState) => prevState.concat(`${number}`))
@@ -275,14 +281,14 @@ export default function ConvertorScreen({ navigation }) {
                 }}
               >
                 <Text className="font-futura text-[30px]">{number}</Text>
-              </Pressable>
+              </BaseButton>
             ))}
           </View>
           <View className="flex w-full h-[23%] flex-row space-x-1">
             {[7, 8, 9].map((number, index) => (
-              <Pressable
+              <BaseButton
                 key={index}
-                className="bg-quaternary2 rounded-[60px] h-full w-1/3 items-center justify-center"
+                className="bg-quaternary2 h-full w-[32.6%] items-center justify-center"
                 onPress={() => {
                   focusOn === "from"
                     ? setFrom((prevState) => prevState.concat(`${number}`))
@@ -292,15 +298,15 @@ export default function ConvertorScreen({ navigation }) {
                 }}
               >
                 <Text className="font-futura text-[30px]">{number}</Text>
-              </Pressable>
+              </BaseButton>
             ))}
           </View>
           <View className="flex w-full h-[23%] flex-row space-x-1">
-            <Pressable className="bg-quaternary2 rounded-[60px] h-full w-1/3 items-center justify-center">
+            <BaseButton className="bg-quaternary2 h-full w-[32.6%] items-center justify-center">
               <Text className="font-futura text-[30px]">*</Text>
-            </Pressable>
-            <Pressable
-              className="bg-quaternary2 rounded-[60px] h-full w-1/3 items-center justify-center"
+            </BaseButton>
+            <BaseButton
+              className="bg-quaternary2 h-full w-[32.6%] items-center justify-center"
               onPress={() => {
                 focusOn === "from"
                   ? setFrom((prevState) => prevState.concat("0"))
@@ -310,9 +316,9 @@ export default function ConvertorScreen({ navigation }) {
               }}
             >
               <Text className="font-futura text-[30px]">0</Text>
-            </Pressable>
-            <Pressable
-              className="bg-quaternary2 rounded-[60px] h-full w-1/3 items-center justify-center"
+            </BaseButton>
+            <BaseButton
+              className="bg-quaternary2 h-full w-[32.6%] items-center justify-center"
               onPress={() => {
                 focusOn === "from"
                   ? setFrom((prevState) => prevState.slice(0, -1))
@@ -320,13 +326,13 @@ export default function ConvertorScreen({ navigation }) {
                   ? setTo((prevState) => prevState.slice(0, -1))
                   : null;
               }}
-              onLongPress={() =>
+              onLongPress={() => {
                 focusOn === "from"
                   ? setFrom("")
                   : focusOn === "to"
                   ? setTo("")
-                  : null
-              }
+                  : null;
+              }}
             >
               <Svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -340,7 +346,7 @@ export default function ConvertorScreen({ navigation }) {
                   clip-rule="evenodd"
                 />
               </Svg>
-            </Pressable>
+            </BaseButton>
           </View>
         </View>
       </View>

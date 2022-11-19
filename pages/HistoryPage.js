@@ -9,7 +9,7 @@ export default function HistoryPage({ navigation }) {
   const historyList = useRecoilValue(historyState);
 
   return (
-    <View className="flex-1 bg-black pt-6">
+    <View className="flex-1 bg-black pt-8">
       {!historyList ? (
         <Text className="text-quinary mx-auto my-auto font-futura_bold text-3xl">
           No History Yet!
@@ -26,7 +26,12 @@ export default function HistoryPage({ navigation }) {
           renderSectionHeader={({ section }) => (
             <View className="px-3 py-1 bg-black">
               <Text className="text-quinary font-futura_bold text-xl">
-                {section.date}
+                {section.date === new Date().toISOString().split("T")[0]
+                  ? "Today"
+                  : section.date ===
+                    new Date(Date.now() - 1).toISOString().split("T")[0]
+                  ? "Yesterday"
+                  : section.date}
               </Text>
             </View>
           )}
@@ -36,7 +41,9 @@ export default function HistoryPage({ navigation }) {
 
       <Pressable
         className="w-20 h-20 rounded-[40px] right-5 bottom-5 absolute bg-secondary items-center justify-center"
-        onPress={() => navigation.navigate("Convertor")}
+        onPress={() => {
+          navigation.navigate("Convertor");
+        }}
       >
         <Svg
           xmlns="http://www.w3.org/2000/svg"
